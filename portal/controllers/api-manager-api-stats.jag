@@ -1,0 +1,70 @@
+<%
+var user;
+var dashboard;
+var page;
+var urlPrefix;
+var tenantPrefix;
+
+(function () {
+    var log = new Log();
+
+    var configs = require('/configs/designer.json');
+
+    tenantPrefix = configs.tenantPrefix + '/{domain}';
+
+    var utils = require('/modules/utils.js');
+    var path = request.getRequestURI();
+    urlPrefix = utils.relativePrefix(path);
+
+    var usr = require('/modules/user.js');
+    user = usr.current();
+
+    response.contentType = 'application/json';
+
+    var method = request.getMethod();
+    var dashboards = require('/modules/dashboards.js');
+    var matcher = new URIMatcher(request.getRequestURI());
+    if (matcher.match('/{context}/apis/api-stats/hot-apis') ||
+            matcher.match('/{context}' + tenantPrefix + '/apis/api-stats/hot-apis')) {
+
+        var db = getDBConnection();
+        var query = "SELECT AM_API.API_NAME, COUNT(*) AS SUBSCRIPTION_COUNT FROM AM_SUBSCRIPTION, AM_API WHERE AM_SUBSCRIPTION.API_ID = AM_API.API_ID GROUP BY AM_API.API_ID";
+        var result = db.query(query);
+
+        var responsePayload = new Object();
+        responsePayload["status"] = "success";
+        responsePayload["stats"] = [];
+
+        if(result){
+
+          for(var i = 0; i < result.length; i++){
+            responsePayload["stats"].push({"apiName" : result[i]["API_NAME"], "subscriptionCount" : parseInt(result[i]["SUBSCRIPTION_COUNT"])});
+          }
+
+        }
+
+        print(responsePayload);
+
+        return;
+    }
+
+    response.sendError(404, JSON.stringify({
+        error: true
+    }));
+}());
+
+function getDBConnection(){
+
+  var apiStatConfigs = require('/configs/api-stats.json');
+
+  var connections = application.get("apiStatsDbConnections");
+
+  if(!connections){
+    connections = new Object();
+    connections["amDb"] = new Database(apiStatConfigs.amDb.url, apiStatConfigs.amDb.username, apiStatConfigs.amDb.password);
+    application.put("apiStatsDbConnections", connections);
+  }
+
+  return connections["amDb"];
+}
+%>

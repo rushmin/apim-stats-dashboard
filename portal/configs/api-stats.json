@@ -1,0 +1,7 @@
+{
+    "amDb": {
+      "url" : "jdbc:h2:/home/rushmin/wso2/dev/rnd/apim/wso2am-1.9.0/repository/database/WSO2AM_DB",
+      "username" : "wso2carbon",
+      "password" : "wso2carbon"
+    }
+}

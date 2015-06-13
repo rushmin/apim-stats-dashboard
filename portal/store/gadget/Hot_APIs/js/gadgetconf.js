@@ -1,0 +1,1 @@
+var gadgetConfig ={"id":"Sensor_Data","title":"Sensor Data","datasource":"SENSORSTREAM","type":"batch","columns":[{"name":"value","type":"INTEGER"},{"name":"city","type":"STRING"}],"maxUpdateValue":10,"chartConfig":{"chartType":"bar","xAxis":1,"yAxis":0}};
