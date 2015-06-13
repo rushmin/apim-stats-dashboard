@@ -24,6 +24,8 @@ var tenantPrefix;
     var method = request.getMethod();
     var dashboards = require('/modules/dashboards.js');
     var matcher = new URIMatcher(request.getRequestURI());
+    log.info("RequestUri === " + request.getRequestURI() );
+
     if (matcher.match('/{context}/apis/api-stats/hot-apis') ||
             matcher.match('/{context}' + tenantPrefix + '/apis/api-stats/hot-apis')) {
 
@@ -39,6 +41,30 @@ var tenantPrefix;
 
           for(var i = 0; i < result.length; i++){
             responsePayload["stats"].push({"apiName" : result[i]["API_NAME"], "subscriptionCount" : parseInt(result[i]["SUBSCRIPTION_COUNT"])});
+          }
+
+        }
+
+        print(responsePayload);
+
+        return;
+    }
+
+    if (matcher.match('/{context}/apis/api-stats/apps-created') ||
+            matcher.match('/{context}' + tenantPrefix + '/apis/api-stats/apps-created')) {
+
+        var db = getDBConnection();
+        var query = "SELECT CREATED_TIME, COUNT(*) AS APP_COUNT FROM AM_APPLICATION GROUP BY CREATED_TIME";
+        var result = db.query(query);
+
+        var responsePayload = new Object();
+        responsePayload["status"] = "success";
+        responsePayload["stats"] = [];
+
+        if(result){
+
+          for(var i = 0; i < result.length; i++){
+            responsePayload["stats"].push({"time" : result[i]["CREATED_TIME"], "appCount" : parseInt(result[i]["APP_COUNT"])});
           }
 
         }
