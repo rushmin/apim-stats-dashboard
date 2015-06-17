@@ -74,9 +74,31 @@ var tenantPrefix;
         return;
     }
 
+    if (matcher.match('/{context}/apis/api-stats/hot-apps-and-apis') ||
+            matcher.match('/{context}' + tenantPrefix + '/apis/api-stats/hot-apps-and-apis')) {
+
+        var responsePayload = new Object();
+        responsePayload["status"] = "success";
+        responsePayload["stats"] = [];
+
+
+        responsePayload["stats"].push({"appilicationName":"Application 1", "apiName":"API A", "invocations":5});
+        responsePayload["stats"].push({"appilicationName":"Application 1", "apiName":"API B", "invocations":10});
+        responsePayload["stats"].push({"appilicationName":"Application 1", "apiName":"API C", "invocations":4});
+        responsePayload["stats"].push({"appilicationName":"Application 2", "apiName":"API A", "invocations":2});
+        responsePayload["stats"].push({"appilicationName":"Application 2", "apiName":"API B", "invocations":8});
+        responsePayload["stats"].push({"appilicationName":"Application 2", "apiName":"API C", "invocations":5});
+        responsePayload["stats"].push({"appilicationName":"Application 3", "apiName":"API A", "invocations":5});
+
+        print(responsePayload);
+
+        return;
+    }
+
     response.sendError(404, JSON.stringify({
         error: true
     }));
+
 }());
 
 function getDBConnection(){

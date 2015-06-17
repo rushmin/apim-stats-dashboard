@@ -1,0 +1,7 @@
+{
+    "id": "horizontal",
+    "title": "Horizontal",
+    "description": "This is a layout generated through shoelace.io",
+    "thumbnail": "local://store/layout/horizontal/index.jpg",
+    "url": "local://store/layout/horizontal/index.hbs"
+}
