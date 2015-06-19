@@ -24,7 +24,6 @@ var tenantPrefix;
     var method = request.getMethod();
     var dashboards = require('/modules/dashboards.js');
     var matcher = new URIMatcher(request.getRequestURI());
-    log.info("RequestUri === " + request.getRequestURI() );
 
     if (matcher.match('/{context}/apis/api-stats/hot-apis') ||
             matcher.match('/{context}' + tenantPrefix + '/apis/api-stats/hot-apis')) {
@@ -54,7 +53,8 @@ var tenantPrefix;
             matcher.match('/{context}' + tenantPrefix + '/apis/api-stats/apps-created')) {
 
         var db = getDBConnection();
-        var query = "SELECT CREATED_TIME, COUNT(*) AS APP_COUNT FROM AM_APPLICATION GROUP BY CREATED_TIME";
+        var query = "SELECT FORMATDATETIME(CREATED_TIME,'d MMM yyyy') AS CREATED_TIME, COUNT(*) AS APP_COUNT FROM AM_APPLICATION GROUP BY FORMATDATETIME(CREATED_TIME,'d MMM yyyy')";
+        //var query = "SELECT CONVERT(CREATED_TIME, DATE) AS CREATED_TIME, COUNT(*) AS APP_COUNT FROM AM_APPLICATION GROUP BY  CONVERT(CREATED_TIME, DATE)";
         var result = db.query(query);
 
         var responsePayload = new Object();
@@ -73,6 +73,31 @@ var tenantPrefix;
 
         return;
     }
+
+    if (matcher.match('/{context}/apis/api-stats/subscriptionsOverTime') ||
+            matcher.match('/{context}' + tenantPrefix + '/apis/api-stats/subscriptionsOverTime')) {
+
+        var db = getDBConnection();
+        var query = "SELECT FORMATDATETIME(CREATED_TIME,'d MMM yyyy') AS CREATED_TIME, COUNT(*) AS SUBSCRIPTION_COUNT FROM AM_SUBSCRIBER GROUP BY FORMATDATETIME(CREATED_TIME,'d MMM yyyy')";
+        var result = db.query(query);
+
+        var responsePayload = new Object();
+        responsePayload["status"] = "success";
+        responsePayload["stats"] = [];
+
+        if(result){
+
+          for(var i = 0; i < result.length; i++){
+            responsePayload["stats"].push({"time" : result[i]["CREATED_TIME"], "subscriptionCount" : parseInt(result[i]["SUBSCRIPTION_COUNT"])});
+          }
+
+        }
+
+        print(responsePayload);
+
+        return;
+    }
+
 
     if (matcher.match('/{context}/apis/api-stats/hot-apps-and-apis') ||
             matcher.match('/{context}' + tenantPrefix + '/apis/api-stats/hot-apps-and-apis')) {
@@ -94,6 +119,7 @@ var tenantPrefix;
 
         return;
     }
+
 
     response.sendError(404, JSON.stringify({
         error: true

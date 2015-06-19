@@ -1,0 +1,1 @@
+var gadgetConfig ={"id":"Developer_Subscriptions","title":"Developer Subscriptions","datasource":"TEMP3","type":"batch","columns":[{"name":"time","type":"STRING"},{"name":"subscriptionCount","type":"STRING"}],"maxUpdateValue":10,"chartConfig":{"chartType":"bar","xAxis":1,"yAxis":0}};
